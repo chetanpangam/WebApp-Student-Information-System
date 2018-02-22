@@ -1,0 +1,122 @@
+# Deployment procedure for HEROKU
+
+1. Sign up at Heroku website:
+
+https://id.heroku.com/login (Links to an external site.)
+ 
+
+2. Download toolbelt
+ 
+
+3. get bundler gem:
+
+  > gem install bundler
+
+4.  create "Gemfile" in application directory with following content:
+
+
+source :rubygems
+
+gem "sinatra"
+
+gem "slim"
+
+gem "sass"
+
+gem "dm-core"
+
+gem "dm-migrations"
+
+gem "thin"
+
+gem "pg", :group => :production
+
+gem "dm-postgres-adapter", :group => :production
+
+gem "dm-sqlite-adapter", :group => :development
+
+ 
+if there is error of cannot load “dm-postgres-adapter”, get rid of the “group=>:production”
+
+after dm-postgres-adapter. also, after you convert to using erb, you want to use gem “erb” instead of get “slim”
+
+ 
+
+5. create "Gemfile.lock" file, run:
+
+> bundle install - -without production
+
+
+6. create "config.ru" file for rackup program with following content:
+
+require './main'
+
+run Sinatra::Application
+
+
+7. initialize git repository (folder), in your application folder, run:
+
+> git init
+
+
+8. set git identity:
+
+>git config user.name “yourname"
+
+>git config user.email "yourname@email.com"
+
+
+9. add application to git repository and commit, in your application folder, run:
+
+> git add .
+
+> git commit -m "my first version"
+
+
+10. create application on Heroku:
+
+>heroku create myapplication1
+
+
+11. push application from git repository to Heroku server
+
+> git push heroku master
+
+
+12. create database on Heroku server, run remote irb:
+
+> heroku run console
+
+irb> require ‘./main'
+
+this should return “true”
+
+irb> DataMapper.auto_migrate!
+
+ 
+ before this step, you need to add the configure block shown in slide to the main.rb code
+
+ 
+configure :development do
+
+    #setup sqlite database
+
+end
+
+ 
+configure :production do
+
+    #setup ENV[…]  database
+
+end
+
+ 
+
+then you don’t need database setup in other file.
+
+check out the detail on slide
+
+
+13. open your new application on Heroku:
+
+>heroku open
